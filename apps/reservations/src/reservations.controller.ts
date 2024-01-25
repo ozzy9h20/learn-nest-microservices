@@ -23,7 +23,7 @@ export class ReservationsController {
     @Body() createReservationDto: CreateReservationDto,
     @CurrentUser() user: UserDto,
   ) {
-    return this.reservationsService.create(createReservationDto, user);
+    return this.reservationsService.create({ createReservationDto, user });
   }
 
   @Get()
