@@ -1,8 +1,8 @@
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
-import { UserDocument } from './users/model/user.schema';
 import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
+import { UserDocument } from '@app/common';
 
 @Injectable()
 export class AuthService {

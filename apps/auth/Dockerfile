@@ -4,10 +4,14 @@ WORKDIR /usr/src/app
 
 COPY package.json ./
 COPY yarn.lock ./
+COPY tsconfig.json tsconfig.json
 
 RUN yarn
 
-COPY . .
+COPY apps/auth apps/auth
+COPY libs libs
+
+RUN cd apps/auth && yarn
 
 RUN yarn build
 

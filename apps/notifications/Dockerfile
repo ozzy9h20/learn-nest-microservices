@@ -4,10 +4,14 @@ WORKDIR /usr/src/app
 
 COPY package.json ./
 COPY yarn.lock ./
+COPY tsconfig.json tsconfig.json
 
 RUN yarn
 
-COPY . .
+COPY apps/notifications apps/notifications
+COPY libs libs
+
+RUN cd apps/notifications && yarn
 
 RUN yarn build
 
