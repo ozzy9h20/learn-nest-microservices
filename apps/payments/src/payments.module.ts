@@ -3,8 +3,9 @@ import { PaymentsController } from './payments.controller';
 import { PaymentsService } from './payments.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
-import { LoggerModule } from '@app/common';
+import { LoggerModule, NOTIFICATIONS_SERVICE } from '@app/common';
 import { MidtransModule } from '@ruraim/nestjs-midtrans';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
@@ -16,6 +17,8 @@ import { MidtransModule } from '@ruraim/nestjs-midtrans';
         MIDTRANS_CLIENT_KEY: Joi.string().required(),
         MIDTRANS_SERVER_KEY: Joi.string().required(),
         MIDTRANS_MODE: Joi.string().valid('production', 'sandbox'),
+        NOTIFICATIONS_HOST: Joi.string().required(),
+        NOTIFICATIONS_PORT: Joi.number().required(),
       }),
     }),
     MidtransModule.registerAsync({
@@ -28,6 +31,19 @@ import { MidtransModule } from '@ruraim/nestjs-midtrans';
       inject: [ConfigService],
     }),
     LoggerModule,
+    ClientsModule.registerAsync([
+      {
+        name: NOTIFICATIONS_SERVICE,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: configService.get('NOTIFICATIONS_HOST'),
+            port: configService.get('NOTIFICATIONS_PORT'),
+          },
+        }),
+        inject: [ConfigService],
+      },
+    ]),
   ],
   controllers: [PaymentsController],
   providers: [PaymentsService],
