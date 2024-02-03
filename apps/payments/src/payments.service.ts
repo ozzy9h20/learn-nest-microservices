@@ -12,18 +12,21 @@ export class PaymentsService {
     private readonly notificationService: ClientProxy,
   ) {}
 
-  async charge(data: PaymentsCreateChargeDto) {
+  async charge({ email, amount }: PaymentsCreateChargeDto) {
     const paymentIntent = await this.snapService.transaction({
       transaction_details: {
         order_id: `SANDBOX_${Date.now()}`,
-        gross_amount: data.amount,
+        gross_amount: amount,
       },
       credit_card: {
         secure: true,
       },
     });
 
-    this.notificationService.emit('notify_email', { email: data.email });
+    this.notificationService.emit('notify_email', {
+      email,
+      text: `Your payment of IDR. ${amount} has completed`,
+    });
 
     return paymentIntent;
   }
