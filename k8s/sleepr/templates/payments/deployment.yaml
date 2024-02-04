@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: payments
+  name: payments
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments
+
+  template:
+    metadata:
+      labels:
+        app: payments
+    spec:
+      containers:
+        - image: asia-southeast2-docker.pkg.dev/sleepr-413203/payments/production
+          name: payments
+          env:
+            - name: PORT
+              value: '3001'
+            - name: NOTIFICATIONS_HOST
+              value: notifications
+            - name: NOTIFICATIONS_PORT
+              value: '3000'
+            - name: MIDTRANS_MERCHANT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: midtrans
+                  key: merchantId
+            - name: MIDTRANS_CLIENT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: midtrans
+                  key: clientKey
+            - name: MIDTRANS_SERVER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: midtrans
+                  key: serverKey
+            - name: MIDTRANS_MODE
+              value: 'sandbox'
+          ports:
+            - containerPort: 3001
